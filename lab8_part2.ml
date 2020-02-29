@@ -153,6 +153,46 @@ module IntSerialize : (SERIALIZE with type t = int) =
 
 module IntStack : (STACK with type element = IntSerialize.t) =
   MakeStack(IntSerialize) ;;
+  
+  
+  
+  module MakeStack (Element: SERIALIZE) : (STACK with type element = Element.t) =
+  struct
+    exception Empty
+
+    type element = Element.t
+    type stack = element list
+
+    let empty : stack = []
+
+    let push (el : element) (s : stack) : stack =
+      el :: s
+
+    let pop_helper (s : stack) : (element * stack) =
+      match s with
+      | [] -> raise Empty
+      | h :: t -> (h, t)
+
+    let top (s : stack) : element =
+      fst (pop_helper s)
+
+    let pop (s : stack) : stack =
+      snd (pop_helper s)
+
+    let map (f : element -> element) (s : stack) : stack =
+      List.map f s
+
+    let filter (f : element -> bool) (s : stack) : stack =
+      List.filter f s
+
+    let fold_left (f : 'a -> element -> 'a) (init : 'a) (s : stack) : 'a =
+      List.fold_left f init s
+
+    let serialize (s : stack) : string =
+      let string_join x y = Element.serialize y
+                  ^ (if x <> "" then ":" ^ x else "") in
+      fold_left string_join "" s  
+    end ;;
 (*......................................................................
 Exercise 1C: Make a module `IntStringStack` that creates a stack whose
 elements are `int * string` pairs. Its serialize function should output
