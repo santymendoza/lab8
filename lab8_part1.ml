@@ -335,6 +335,9 @@ module MakeBestInterval (Endpoint : ORDERED_TYPE)
          create low high
   end
 ;;
+(* We now have a fully functioning functor that can create interval
+modules of whatever type we want, with the appropriate abstraction
+level.
 
 ........................................................................
 Exercise 3B: Use the MakeBestInterval functor to create a new int
